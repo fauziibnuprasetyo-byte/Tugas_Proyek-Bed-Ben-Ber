@@ -95,3 +95,16 @@ obat_terpilih.append(obat)
 # Kurangi stok
 for obat in obat_terpilih:
 cur.execute("UPDATE stok SET jumlah = jumlah - 1 WHERE obat=?", (obat,))
+
+tanggal = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+tindakan = "Diberi: " + ", ".join(obat_terpilih)
+
+cur.execute("""
+INSERT INTO kunjungan (tanggal, nama, kelas, keluhan, tindakan)
+VALUES (?, ?, ?, ?, ?)
+""", (tanggal, nama, kelas, keluhan, tindakan))
+
+conn.commit()
+
+print("\n✅ Data & stok tersimpan!")
+input("Tekan Enter...")
