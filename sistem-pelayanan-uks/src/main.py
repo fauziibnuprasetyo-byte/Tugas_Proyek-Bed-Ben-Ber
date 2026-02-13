@@ -134,4 +134,4 @@ def tambah_kunjungan():
 
     conn.commit()
     print("\n✅ Data & stok tersimpan!")
-    input("Tekan Enter...")
+    input("Tekan Enter....")
