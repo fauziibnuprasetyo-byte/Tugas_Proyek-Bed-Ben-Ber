@@ -51,5 +51,16 @@ conn.commit()
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
+
+
+
+
+
+
 def tambah_kunjungan():
-pass
+clear()
+print("=== TAMBAH DATA UKS ===")
+
+nama = input("Nama : ")
+kelas = input("Kelas : ")
+keluhan = input("Keluhan: ")
