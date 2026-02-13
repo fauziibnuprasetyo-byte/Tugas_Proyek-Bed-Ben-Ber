@@ -174,3 +174,28 @@ def tambah_stok():
 
     print("✅ Stok berhasil ditambahkan!")
     input("Tekan Enter...")
+
+while True:
+    clear()
+    print("=== UKS SIMPLE SYSTEM ===")
+    print("1. Tambah Kunjungan")     # Orang 1
+    print("2. Lihat Kunjungan")     # Orang 2
+    print("3. Lihat Stok")          # Orang 3
+    print("4. Tambah Stok")         # Orang 3
+    print("5. Export Excel")        # Orang 2
+    print("0. Keluar")
+
+    p = input("Pilih: ")
+
+    if p == "1":
+        tambah_kunjungan()
+    elif p == "2":
+        lihat_kunjungan()
+    elif p == "3":
+        lihat_stok()
+    elif p == "4":
+        tambah_stok()
+    elif p == "5":
+        export_excel()
+    elif p == "0":
+        break
