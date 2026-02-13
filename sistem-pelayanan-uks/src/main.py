@@ -52,7 +52,6 @@ def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
 
-
 def tambah_kunjungan():
     clear()
     print("=== TAMBAH DATA UKS ===")
@@ -102,7 +101,6 @@ def tambah_kunjungan():
     input("Tekan Enter...")
 
 
-
 def lihat_kunjungan():
     clear()
     print("=== DATA KUNJUNGAN ===\n")
@@ -141,3 +139,38 @@ def export_excel():
     print(f"✅ Data berhasil diekspor ke: {filename}")
     input("\nTekan Enter...")
 
+
+def lihat_stok():
+    clear()
+    print("=== STOK OBAT ===\n")
+
+    cur.execute("SELECT * FROM stok")
+    data = cur.fetchall()
+
+    for obat, jumlah in data:
+        print(f"{obat}: {jumlah}")
+
+    input("\nTekan Enter...")
+
+
+def tambah_stok():
+    clear()
+    print("=== TAMBAH STOK OBAT ===\n")
+
+    cur.execute("SELECT * FROM stok")
+    data = cur.fetchall()
+
+    for i, (obat, jumlah) in enumerate(data, 1):
+        print(f"{i}. {obat} (stok: {jumlah})")
+
+    pilihan = int(input("\nPilih nomor obat: ")) - 1
+    tambahan = int(input("Jumlah tambahan stok: "))
+
+    obat_dipilih = data[pilihan][0]
+
+    cur.execute("UPDATE stok SET jumlah = jumlah + ? WHERE obat=?",
+                (tambahan, obat_dipilih))
+    conn.commit()
+
+    print("✅ Stok berhasil ditambahkan!")
+    input("Tekan Enter...")
