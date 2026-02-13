@@ -51,6 +51,8 @@ conn.commit()
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
+
+
 def tambah_kunjungan():
     clear()
     print("=== TAMBAH DATA UKS ===")
@@ -98,3 +100,44 @@ def tambah_kunjungan():
     conn.commit()
     print("\n✅ Data & stok tersimpan!")
     input("Tekan Enter...")
+
+
+
+def lihat_kunjungan():
+    clear()
+    print("=== DATA KUNJUNGAN ===\n")
+
+    cur.execute("SELECT * FROM kunjungan ORDER BY id DESC")
+    data = cur.fetchall()
+
+    if not data:
+        print("Belum ada data.")
+    else:
+        for d in data:
+            print(d)
+
+    input("\nTekan Enter...")
+
+
+def export_excel():
+    clear()
+    print("=== EXPORT DATA KE EXCEL ===\n")
+
+    cur.execute("SELECT * FROM kunjungan ORDER BY id DESC")
+    data = cur.fetchall()
+
+    if not data:
+        print("Tidak ada data untuk diekspor!")
+        input("Tekan Enter...")
+        return
+
+    filename = "laporan_uks.csv"
+
+    with open(filename, mode="w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(["ID", "Tanggal", "Nama", "Kelas", "Keluhan", "Tindakan"])
+        writer.writerows(data)
+
+    print(f"✅ Data berhasil diekspor ke: {filename}")
+    input("\nTekan Enter...")
+
