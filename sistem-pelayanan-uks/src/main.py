@@ -66,3 +66,17 @@ def lihat_kunjungan():
 
     input("\nTekan Enter...")
 
+def export_excel():
+    clear()
+    print("=== EXPORT DATA KE EXCEL ===\n")
+
+    cur.execute("SELECT * FROM kunjungan ORDER BY id DESC")
+    data = cur.fetchall()
+
+    if not data:
+        print("Tidak ada data untuk diekspor!")
+        input("Tekan Enter...")
+        return
+
+    filename = "laporan_uks.csv"
+
