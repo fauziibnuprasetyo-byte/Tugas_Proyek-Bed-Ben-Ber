@@ -50,3 +50,6 @@ conn.commit()
 
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
+
+def tambah_kunjungan():
+pass
