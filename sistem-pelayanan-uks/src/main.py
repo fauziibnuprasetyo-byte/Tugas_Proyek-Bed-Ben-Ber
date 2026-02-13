@@ -75,3 +75,23 @@ print(f"{i}. {obat} (stok: {stok})")
 
 pilihan = input("\nMasukkan nomor (pisahkan dengan koma): ")
 daftar_nomor = pilihan.split(",")
+
+obat_terpilih = []
+
+for nomor in daftar_nomor:
+idx = int(nomor.strip()) - 1
+obat = DAFTAR_OBAT[idx]
+
+cur.execute("SELECT jumlah FROM stok WHERE obat=?", (obat,))
+stok = cur.fetchone()[0]
+
+if stok <= 0:
+print(f"\n❌ Stok {obat} habis! Proses dibatalkan.")
+input("Tekan Enter...")
+return
+
+obat_terpilih.append(obat)
+
+# Kurangi stok
+for obat in obat_terpilih:
+cur.execute("UPDATE stok SET jumlah = jumlah - 1 WHERE obat=?", (obat,))
