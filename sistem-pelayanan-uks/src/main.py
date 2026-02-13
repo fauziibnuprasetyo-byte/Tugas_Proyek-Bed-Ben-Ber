@@ -52,59 +52,53 @@ def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
 
-
-
-
-
-
+# ======================================================
+# 👤 ORANG 1 — FITUR INPUT KUNJUNGAN
+# ======================================================
 def tambah_kunjungan():
-clear()
-print("=== TAMBAH DATA UKS ===")
+    clear()
+    print("=== TAMBAH DATA UKS ===")
+    nama = input("Nama   : ")
+    kelas = input("Kelas  : ")
+    keluhan = input("Keluhan: ")
 
-nama = input("Nama : ")
-kelas = input("Kelas : ")
-keluhan = input("Keluhan: ")
+    print("\nPilih obat (bisa lebih dari satu).")
+    print("Contoh: 1,3,5\n")
 
-print("\nPilih obat (bisa lebih dari satu).")
-print("Contoh: 1,3,5\n")
+    for i, obat in enumerate(DAFTAR_OBAT, 1):
+        cur.execute("SELECT jumlah FROM stok WHERE obat=?", (obat,))
+        stok = cur.fetchone()[0]
+        print(f"{i}. {obat} (stok: {stok})")
 
-for i, obat in enumerate(DAFTAR_OBAT, 1):
-cur.execute("SELECT jumlah FROM stok WHERE obat=?", (obat,))
-stok = cur.fetchone()[0]
-print(f"{i}. {obat} (stok: {stok})")
+    pilihan = input("\nMasukkan nomor (pisahkan dengan koma): ")
+    daftar_nomor = pilihan.split(",")
+    obat_terpilih = []
 
-pilihan = input("\nMasukkan nomor (pisahkan dengan koma): ")
-daftar_nomor = pilihan.split(",")
+    for nomor in daftar_nomor:
+        idx = int(nomor.strip()) - 1
+        obat = DAFTAR_OBAT[idx]
 
-obat_terpilih = []
+        cur.execute("SELECT jumlah FROM stok WHERE obat=?", (obat,))
+        stok = cur.fetchone()[0]
 
-for nomor in daftar_nomor:
-idx = int(nomor.strip()) - 1
-obat = DAFTAR_OBAT[idx]
+        if stok <= 0:
+            print(f"\n❌ Stok {obat} habis! Proses dibatalkan.")
+            input("Tekan Enter...")
+            return
 
-cur.execute("SELECT jumlah FROM stok WHERE obat=?", (obat,))
-stok = cur.fetchone()[0]
+        obat_terpilih.append(obat)
 
-if stok <= 0:
-print(f"\n❌ Stok {obat} habis! Proses dibatalkan.")
-input("Tekan Enter...")
-return
+    for obat in obat_terpilih:
+        cur.execute("UPDATE stok SET jumlah = jumlah - 1 WHERE obat=?", (obat,))
 
-obat_terpilih.append(obat)
+    tanggal = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    tindakan = "Diberi: " + ", ".join(obat_terpilih)
 
-# Kurangi stok
-for obat in obat_terpilih:
-cur.execute("UPDATE stok SET jumlah = jumlah - 1 WHERE obat=?", (obat,))
+    cur.execute("""
+    INSERT INTO kunjungan (tanggal, nama, kelas, keluhan, tindakan)
+    VALUES (?, ?, ?, ?, ?)
+    """, (tanggal, nama, kelas, keluhan, tindakan))
 
-tanggal = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-tindakan = "Diberi: " + ", ".join(obat_terpilih)
-
-cur.execute("""
-INSERT INTO kunjungan (tanggal, nama, kelas, keluhan, tindakan)
-VALUES (?, ?, ?, ?, ?)
-""", (tanggal, nama, kelas, keluhan, tindakan))
-
-conn.commit()
-
-print("\n✅ Data & stok tersimpan!")
-input("Tekan Enter...")
+    conn.commit()
+    print("\n✅ Data & stok tersimpan!")
+    input("Tekan Enter...")
