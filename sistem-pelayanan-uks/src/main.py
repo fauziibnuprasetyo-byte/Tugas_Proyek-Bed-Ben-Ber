@@ -80,3 +80,8 @@ def export_excel():
 
     filename = "laporan_uks.csv"
 
+    with open(filename, mode="w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(["ID", "Tanggal", "Nama", "Kelas", "Keluhan", "Tindakan"])
+        writer.writerows(data)
+
