@@ -51,10 +51,6 @@ conn.commit()
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
-
-# ======================================================
-# 👤 ORANG 1 — FITUR INPUT KUNJUNGAN
-# ======================================================
 def tambah_kunjungan():
     clear()
     print("=== TAMBAH DATA UKS ===")
