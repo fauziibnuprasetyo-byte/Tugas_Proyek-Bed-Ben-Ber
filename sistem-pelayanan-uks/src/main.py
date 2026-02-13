@@ -64,3 +64,14 @@ print("=== TAMBAH DATA UKS ===")
 nama = input("Nama : ")
 kelas = input("Kelas : ")
 keluhan = input("Keluhan: ")
+
+print("\nPilih obat (bisa lebih dari satu).")
+print("Contoh: 1,3,5\n")
+
+for i, obat in enumerate(DAFTAR_OBAT, 1):
+cur.execute("SELECT jumlah FROM stok WHERE obat=?", (obat,))
+stok = cur.fetchone()[0]
+print(f"{i}. {obat} (stok: {stok})")
+
+pilihan = input("\nMasukkan nomor (pisahkan dengan koma): ")
+daftar_nomor = pilihan.split(",")
