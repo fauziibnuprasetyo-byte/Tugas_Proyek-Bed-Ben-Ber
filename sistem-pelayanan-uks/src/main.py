@@ -85,3 +85,5 @@ def export_excel():
         writer.writerow(["ID", "Tanggal", "Nama", "Kelas", "Keluhan", "Tindakan"])
         writer.writerows(data)
 
+     print(f"✅ Data berhasil diekspor ke: {filename}")
+
