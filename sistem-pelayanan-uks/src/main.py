@@ -50,3 +50,51 @@ conn.commit()
 
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
+
+def tambah_kunjungan():
+    clear()
+    print("=== TAMBAH DATA UKS ===")
+    nama = input("Nama   : ")
+    kelas = input("Kelas  : ")
+    keluhan = input("Keluhan: ")
+
+    print("\nPilih obat (bisa lebih dari satu).")
+    print("Contoh: 1,3,5\n")
+
+    for i, obat in enumerate(DAFTAR_OBAT, 1):
+        cur.execute("SELECT jumlah FROM stok WHERE obat=?", (obat,))
+        stok = cur.fetchone()[0]
+        print(f"{i}. {obat} (stok: {stok})")
+
+    pilihan = input("\nMasukkan nomor (pisahkan dengan koma): ")
+    daftar_nomor = pilihan.split(",")
+    obat_terpilih = []
+
+    for nomor in daftar_nomor:
+        idx = int(nomor.strip()) - 1
+        obat = DAFTAR_OBAT[idx]
+
+        cur.execute("SELECT jumlah FROM stok WHERE obat=?", (obat,))
+        stok = cur.fetchone()[0]
+
+        if stok <= 0:
+            print(f"\n❌ Stok {obat} habis! Proses dibatalkan.")
+            input("Tekan Enter...")
+            return
+
+        obat_terpilih.append(obat)
+
+    for obat in obat_terpilih:
+        cur.execute("UPDATE stok SET jumlah = jumlah - 1 WHERE obat=?", (obat,))
+
+    tanggal = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    tindakan = "Diberi: " + ", ".join(obat_terpilih)
+
+    cur.execute("""
+    INSERT INTO kunjungan (tanggal, nama, kelas, keluhan, tindakan)
+    VALUES (?, ?, ?, ?, ?)
+    """, (tanggal, nama, kelas, keluhan, tindakan))
+
+    conn.commit()
+    print("\n✅ Data & stok tersimpan!")
+    input("Tekan Enter...")
