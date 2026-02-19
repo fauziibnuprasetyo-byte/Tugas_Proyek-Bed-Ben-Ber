@@ -10,12 +10,14 @@ DB = "uks.db"
 # =======================
 DAFTAR_OBAT = [
     "Paracetamol",
-    "Bodrex",
-    "Antimo",
+    "Ibuprofen",
+    "Antasida DOEN",
     "Oralit",
-    "Tolak Angin",
-    "Minyak Kayu Putih",
-    "Obat Maag",
+    "Cetirizine",
+    "Dextromethorphan",
+    "Ambroxol",
+    "Vitamin C",
+    "Vitamin B Complex",
     "Tidak pakai obat"
 ]
 
