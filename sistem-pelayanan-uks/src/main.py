@@ -6,7 +6,7 @@ import csv
 DB = "uks.db"
 
 # =======================
-# DAFTAR OBAT
+#     DAFTAR OBAT
 # =======================
 DAFTAR_OBAT = [
     "Paracetamol",
@@ -22,7 +22,7 @@ DAFTAR_OBAT = [
 ]
 
 # =======================
-# SETUP DATABASE
+#     SETUP DATABASE
 # =======================
 conn = sqlite3.connect(DB)
 cur = conn.cursor()
@@ -53,7 +53,7 @@ conn.commit()
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
-
+# fitur tambah_kunjungan
 def tambah_kunjungan():
     clear()
     print("=== TAMBAH DATA UKS ===")
@@ -134,7 +134,7 @@ def tambah_kunjungan():
     print("\n✅ Data & stok tersimpan!")
     input("Tekan Enter...")
 
-
+#fitur lihat_kunjungan
 def lihat_kunjungan():
     clear()
     print("=== DATA KUNJUNGAN ===\n")
@@ -150,7 +150,7 @@ def lihat_kunjungan():
 
     input("\nTekan Enter...")
 
-
+#fitur export_excel
 def export_excel():
     clear()
     print("=== EXPORT DATA KE EXCEL ===\n")
@@ -173,7 +173,7 @@ def export_excel():
     print(f"✅ Data berhasil diekspor ke: {filename}")
     input("\nTekan Enter...")
 
-
+#fitur lihat_stok
 def lihat_stok():
     clear()
     print("=== STOK OBAT ===\n")
@@ -186,7 +186,7 @@ def lihat_stok():
 
     input("\nTekan Enter...")
 
-
+#fitur tambah_stok
 def tambah_stok():
     clear()
     print("=== TAMBAH STOK OBAT ===\n")
