@@ -59,31 +59,63 @@ def tambah_kunjungan():
     kelas = input("Kelas  : ")
     keluhan = input("Keluhan: ")
 
-    print("\nPilih obat (bisa lebih dari satu).")
+    print("\nPilih tindakan/obat (bisa lebih dari satu).")
     print("Contoh: 1,3,5\n")
 
     for i, obat in enumerate(DAFTAR_OBAT, 1):
         cur.execute("SELECT jumlah FROM stok WHERE obat=?", (obat,))
         stok = cur.fetchone()[0]
-        print(f"{i}. {obat} (stok: {stok})")
+        # Jika indeks 8 (Tidak pakai obat), tidak perlu tampilkan stok
+        if obat == "Tidak pakai obat":
+            print(f"{i}. {obat}")
+        else:
+            print(f"{i}. {obat} (stok: {stok})")
 
     pilihan = input("\nMasukkan nomor (pisahkan dengan koma): ")
     daftar_nomor = pilihan.split(",")
     obat_terpilih = []
+    rekomendasi_tambahan = ""
 
     for nomor in daftar_nomor:
-        idx = int(nomor.strip()) - 1
-        obat = DAFTAR_OBAT[idx]
+        try:
+            idx = int(nomor.strip()) - 1
+            obat = DAFTAR_OBAT[idx]
+            
+            # LOGIKA BARU: Jika pilih nomor 8 (Tidak pakai obat)
+            if obat == "Tidak pakai obat":
+                rekomendasi_tambahan = input("Masukkan rekomendasi tindakan (misal: Istirahat 30 menit): ")
+                obat_terpilih.append(f"Tanpa Obat ({rekomendasi_tambahan})")
+                continue # Lanjut ke nomor berikutnya tanpa cek stok
 
-        cur.execute("SELECT jumlah FROM stok WHERE obat=?", (obat,))
-        stok = cur.fetchone()[0]
+            # Cek Stok untuk obat beneran
+            cur.execute("SELECT jumlah FROM stok WHERE obat=?", (obat,))
+            stok = cur.fetchone()[0]
 
-        if stok <= 0:
-            print(f"\n❌ Stok {obat} habis! Proses dibatalkan.")
+            if stok <= 0:
+                print(f"\n❌ Stok {obat} habis! Proses dibatalkan.")
+                input("Tekan Enter...")
+                return
+
+            obat_terpilih.append(obat)
+            # Update stok hanya untuk obat beneran
+            cur.execute("UPDATE stok SET jumlah = jumlah - 1 WHERE obat=?", (obat,))
+
+        except (ValueError, IndexError):
+            print(f"\n❌ Nomor {nomor} tidak valid!")
             input("Tekan Enter...")
             return
 
-        obat_terpilih.append(obat)
+    tanggal = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    tindakan = "Tindakan: " + ", ".join(obat_terpilih)
+
+    cur.execute("""
+    INSERT INTO kunjungan (tanggal, nama, kelas, keluhan, tindakan)
+    VALUES (?, ?, ?, ?, ?)
+    """, (tanggal, nama, kelas, keluhan, tindakan))
+
+    conn.commit()
+    print("\n✅ Data berhasil disimpan!")
+    input("Tekan Enter...")
 
     for obat in obat_terpilih:
         cur.execute("UPDATE stok SET jumlah = jumlah - 1 WHERE obat=?", (obat,))
