@@ -212,11 +212,11 @@ def tambah_stok():
 while True:
     clear()
     print("=== UKS SIMPLE SYSTEM ===")
-    print("1. Tambah Kunjungan")     # Orang 1
-    print("2. Lihat Kunjungan")     # Orang 2
-    print("3. Lihat Stok")          # Orang 3
-    print("4. Tambah Stok")         # Orang 3
-    print("5. Export Excel")        # Orang 2
+    print("1. Tambah Kunjungan")     
+    print("2. Lihat Kunjungan")     
+    print("3. Lihat Stok")          
+    print("4. Tambah Stok")       
+    print("5. Export Excel")        
     print("0. Keluar")
 
     p = input("Pilih: ")
