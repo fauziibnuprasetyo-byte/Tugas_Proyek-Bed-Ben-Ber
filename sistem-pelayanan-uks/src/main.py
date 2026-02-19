@@ -6,21 +6,23 @@ import csv
 DB = "uks.db"
 
 # =======================
-# DAFTAR OBAT
+#     DAFTAR OBAT
 # =======================
 DAFTAR_OBAT = [
     "Paracetamol",
-    "Bodrex",
-    "Antimo",
+    "Ibuprofen",
+    "Antasida DOEN",
     "Oralit",
-    "Tolak Angin",
-    "Minyak Kayu Putih",
-    "Obat Maag",
+    "Cetirizine",
+    "Dextromethorphan",
+    "Ambroxol",
+    "Vitamin C",
+    "Vitamin B Complex",
     "Tidak pakai obat"
 ]
 
 # =======================
-# SETUP DATABASE
+#     SETUP DATABASE
 # =======================
 conn = sqlite3.connect(DB)
 cur = conn.cursor()
@@ -28,11 +30,11 @@ cur = conn.cursor()
 cur.execute("""
 CREATE TABLE IF NOT EXISTS kunjungan (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
-tanggal TEXT,
-nama TEXT,
+Tanggal TEXT,
+Nama TEXT,
 kelas TEXT,
-keluhan TEXT,
-tindakan TEXT
+Keluhan TEXT,
+Tindakan TEXT
 )
 """)
 
@@ -51,7 +53,7 @@ conn.commit()
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
-
+# fitur tambah_kunjungan
 def tambah_kunjungan():
     clear()
     print("=== TAMBAH DATA UKS ===")
@@ -59,31 +61,63 @@ def tambah_kunjungan():
     kelas = input("Kelas  : ")
     keluhan = input("Keluhan: ")
 
-    print("\nPilih obat (bisa lebih dari satu).")
+    print("\nPilih tindakan/obat (bisa lebih dari satu).")
     print("Contoh: 1,3,5\n")
 
     for i, obat in enumerate(DAFTAR_OBAT, 1):
         cur.execute("SELECT jumlah FROM stok WHERE obat=?", (obat,))
         stok = cur.fetchone()[0]
-        print(f"{i}. {obat} (stok: {stok})")
+        # Jika indeks 8 (Tidak pakai obat), tidak perlu tampilkan stok
+        if obat == "Tidak pakai obat":
+            print(f"{i}. {obat}")
+        else:
+            print(f"{i}. {obat} (stok: {stok})")
 
     pilihan = input("\nMasukkan nomor (pisahkan dengan koma): ")
     daftar_nomor = pilihan.split(",")
     obat_terpilih = []
+    rekomendasi_tambahan = ""
 
     for nomor in daftar_nomor:
-        idx = int(nomor.strip()) - 1
-        obat = DAFTAR_OBAT[idx]
+        try:
+            idx = int(nomor.strip()) - 1
+            obat = DAFTAR_OBAT[idx]
+            
+            # LOGIKA BARU: Jika pilih nomor 8 (Tidak pakai obat)
+            if obat == "Tidak pakai obat":
+                rekomendasi_tambahan = input("Masukkan rekomendasi tindakan (misal: Istirahat 30 menit): ")
+                obat_terpilih.append(f"Tanpa Obat ({rekomendasi_tambahan})")
+                continue # Lanjut ke nomor berikutnya tanpa cek stok
 
-        cur.execute("SELECT jumlah FROM stok WHERE obat=?", (obat,))
-        stok = cur.fetchone()[0]
+            # Cek Stok untuk obat beneran
+            cur.execute("SELECT jumlah FROM stok WHERE obat=?", (obat,))
+            stok = cur.fetchone()[0]
 
-        if stok <= 0:
-            print(f"\n❌ Stok {obat} habis! Proses dibatalkan.")
+            if stok <= 0:
+                print(f"\n❌ Stok {obat} habis! Proses dibatalkan.")
+                input("Tekan Enter...")
+                return
+
+            obat_terpilih.append(obat)
+            # Update stok hanya untuk obat beneran
+            cur.execute("UPDATE stok SET jumlah = jumlah - 1 WHERE obat=?", (obat,))
+
+        except (ValueError, IndexError):
+            print(f"\n❌ Nomor {nomor} tidak valid!")
             input("Tekan Enter...")
             return
 
-        obat_terpilih.append(obat)
+    tanggal = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    tindakan = "Tindakan: " + ", ".join(obat_terpilih)
+
+    cur.execute("""
+    INSERT INTO kunjungan (tanggal, nama, kelas, keluhan, tindakan)
+    VALUES (?, ?, ?, ?, ?)
+    """, (tanggal, nama, kelas, keluhan, tindakan))
+
+    conn.commit()
+    print("\n✅ Data berhasil disimpan!")
+    input("Tekan Enter...")
 
     for obat in obat_terpilih:
         cur.execute("UPDATE stok SET jumlah = jumlah - 1 WHERE obat=?", (obat,))
@@ -100,7 +134,7 @@ def tambah_kunjungan():
     print("\n✅ Data & stok tersimpan!")
     input("Tekan Enter...")
 
-
+#fitur lihat_kunjungan
 def lihat_kunjungan():
     clear()
     print("=== DATA KUNJUNGAN ===\n")
@@ -116,7 +150,7 @@ def lihat_kunjungan():
 
     input("\nTekan Enter...")
 
-
+#fitur export_excel
 def export_excel():
     clear()
     print("=== EXPORT DATA KE EXCEL ===\n")
@@ -139,7 +173,7 @@ def export_excel():
     print(f"✅ Data berhasil diekspor ke: {filename}")
     input("\nTekan Enter...")
 
-
+#fitur lihat_stok
 def lihat_stok():
     clear()
     print("=== STOK OBAT ===\n")
@@ -152,7 +186,7 @@ def lihat_stok():
 
     input("\nTekan Enter...")
 
-
+#fitur tambah_stok
 def tambah_stok():
     clear()
     print("=== TAMBAH STOK OBAT ===\n")
@@ -178,11 +212,11 @@ def tambah_stok():
 while True:
     clear()
     print("=== UKS SIMPLE SYSTEM ===")
-    print("1. Tambah Kunjungan")     # Orang 1
-    print("2. Lihat Kunjungan")     # Orang 2
-    print("3. Lihat Stok")          # Orang 3
-    print("4. Tambah Stok")         # Orang 3
-    print("5. Export Excel")        # Orang 2
+    print("1. Tambah Kunjungan")     
+    print("2. Lihat Kunjungan")     
+    print("3. Lihat Stok")          
+    print("4. Tambah Stok")       
+    print("5. Export Excel")        
     print("0. Keluar")
 
     p = input("Pilih: ")
