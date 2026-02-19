@@ -30,11 +30,11 @@ cur = conn.cursor()
 cur.execute("""
 CREATE TABLE IF NOT EXISTS kunjungan (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
-tanggal TEXT,
-nama TEXT,
+Tanggal TEXT,
+Nama TEXT,
 kelas TEXT,
-keluhan TEXT,
-tindakan TEXT
+Keluhan TEXT,
+Tindakan TEXT
 )
 """)
 
